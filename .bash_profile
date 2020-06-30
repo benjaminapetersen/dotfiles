@@ -48,3 +48,51 @@ complete -W "NSGlobalDomain" defaults;
 
 # Add `killall` tab completion for common apps
 complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal Twitter" killall;
+
+# Eternal bash history.
+# https://stackoverflow.com/questions/9457233/unlimited-bash-history
+# ---------------------
+# Undocumented feature which sets the size to "unlimited".
+# http://stackoverflow.com/questions/9457233/unlimited-bash-history
+export HISTFILESIZE=50000
+export HISTSIZE=50000
+export HISTTIMEFORMAT="%d/%m/%y %T "
+# Avoid duplicates
+HISTCONTROL=ignoredups:erasedups
+# When the shell exits, append to the history file instead of overwriting it
+# this is already above
+# shopt -s histappend
+
+# After each command, append to the history file and reread it
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+# Change the file location because certain bash sessions truncate .bash_history file upon close.
+# http://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
+# export HISTFILE=~/.bash_eternal_history
+# Force prompt to write history after every command.
+# http://superuser.com/questions/20900/bash-history-loss
+# PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+
+# Add bin dir
+if [ -d "${HOME}/bin" ]; then
+  export PATH="${PATH}:${HOME}/bin"
+fi
+
+# add NVM
+source ${HOME}/.nvm/nvm.sh
+
+# nvm setup
+export NVM_DIR="${HOME}/.nvm"
+[ -s "${NVM_DIR}/nvm.sh" ] && \. "${NVM_DIR}/nvm.sh"  # This loads nvm
+[ -s "${NVM_DIR}/bash_completion" ] && \. "${NVM_DIR}/bash_completion"  # This loads nvm bash_completion
+
+# google-cloud-sdk
+# source "${HOME}/sdk/google-cloud-sdk/path.bash.inc"
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.bash.inc"
+# source "${HOME}/sdk/google-cloud-sdk/completion.bash.inc"
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.bash.inc"
+
+# google appengine setup
+export PATH="${HOME}/sdk/go_appengine:${PATH}"
+
+
+# Update via the boostrap.sh file, or by copy/paste this entire file into $HOME
