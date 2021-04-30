@@ -49,6 +49,24 @@ complete -W "NSGlobalDomain" defaults;
 # Add `killall` tab completion for common apps
 complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal Twitter" killall;
 
+# turn on ssh-agent so git stops asking for passphrases for keys
+eval "$(ssh-agent)"
+
+# and allow gpg signing withough having to enter passhprases 
+# In order for gpg to find gpg-agent, gpg-agent must be running,
+# and there must be an env variable pointing GPG to the gpg-agent socket.
+# This little script, which must be sourced
+# in your shell's init script (ie, .bash_profile, .zshrc, whatever),
+# will either start gpg-agent or set up the
+# GPG_AGENT_INFO variable if it's already running.
+# if [ -f ~/.gnupg/.gpg-agent-info ] && [ -n "$(pgrep gpg-agent)" ]; then
+#     source ~/.gnupg/.gpg-agent-info
+#     export GPG_AGENT_INFO
+# else
+#     eval $(gpg-agent --daemon --write-env-file ~/.gnupg/.gpg-agent-info)
+# fi
+export GPG_TTY=`tty`
+
 # Eternal bash history.
 # https://stackoverflow.com/questions/9457233/unlimited-bash-history
 # ---------------------
@@ -72,27 +90,52 @@ PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; h
 # http://superuser.com/questions/20900/bash-history-loss
 # PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
-# Add bin dir
+# GVM
+[[ -s "/Users/benjamin.petersen/.gvm/scripts/gvm" ]] && source "/Users/benjamin.petersen/.gvm/scripts/gvm"
+
+# PENDO SPECIFICS
+# ----------------------------------
+if [ -f ${HOME}/.bash_aliases ]; then
+  source ${HOME}/.bash_aliases
+fi
+ 
 if [ -d "${HOME}/bin" ]; then
   export PATH="${PATH}:${HOME}/bin"
 fi
-
-# add NVM
-source ${HOME}/.nvm/nvm.sh
-
+ 
+# go setup
+export PATH="${HOME}/sdk/go/bin:${HOME}/dev/gopath/bin:${PATH}"
+export GOPATH="${HOME}/dev/gopath"
+ 
 # nvm setup
 export NVM_DIR="${HOME}/.nvm"
 [ -s "${NVM_DIR}/nvm.sh" ] && \. "${NVM_DIR}/nvm.sh"  # This loads nvm
 [ -s "${NVM_DIR}/bash_completion" ] && \. "${NVM_DIR}/bash_completion"  # This loads nvm bash_completion
-
-# google-cloud-sdk
+ 
+# gcloud sdk setup
+# source "${HOME}/sdk/google-cloud-sdk/path.bash.inc"
+# source "${HOME}/sdk/google-cloud-sdk/completion.bash.inc"
 # source "${HOME}/sdk/google-cloud-sdk/path.bash.inc"
 source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.bash.inc"
 # source "${HOME}/sdk/google-cloud-sdk/completion.bash.inc"
 source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.bash.inc"
-
+ 
 # google appengine setup
 export PATH="${HOME}/sdk/go_appengine:${PATH}"
+ 
+# pendo-appengine dev server setup
+export PENDO_STORAGE=${HOME}/appengine.${USER}/
+  
+if [ -f ${HOME}/.config/gcloud/application_default_credentials.json ]; then
+  export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/.config/gcloud/application_default_credentials.json
+fi
+ 
+# pendo git tools setup
+export PATH="${HOME}/dev/pendo-appengine/tools/gitcmds:${PATH}"
+source "${HOME}/dev/pendo-appengine/tools/gitcmds/git-completion.bash"
 
+# if Google Chrome is moved to a non-default location
+# export GIT_PR_BROWSER="/path/to/your/browser/executable"
 
 # Update via the boostrap.sh file, or by copy/paste this entire file into $HOME
+

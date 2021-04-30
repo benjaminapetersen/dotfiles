@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# BEN: review and update this file, I think there are quite a few things I would like to tweak
 
 # Install command-line tools using Homebrew.
 
